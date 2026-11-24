@@ -1,0 +1,141 @@
+{
+  "name": "@dorra/hono-rpc-tanstack-query",
+  "version": "0.1.0",
+  "description": "Type-safe TanStack Query utilities for the Hono RPC client: typed errors, safeCall, cache helpers, Vue/Solid/Svelte/React",
+  "keywords": [
+    "agent-skill",
+    "claude-skill",
+    "hc",
+    "hono",
+    "hono-rpc",
+    "neverthrow",
+    "react-query",
+    "rpc",
+    "solid-query",
+    "svelte-query",
+    "tanstack-query",
+    "type-safe",
+    "typescript",
+    "vue-query"
+  ],
+  "license": "MIT",
+  "author": "Dorra",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/its-dorra/hono-rpc-tanstack-query.git"
+  },
+  "homepage": "https://github.com/its-dorra/hono-rpc-tanstack-query#readme",
+  "bugs": {
+    "url": "https://github.com/its-dorra/hono-rpc-tanstack-query/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./neverthrow": {
+      "import": {
+        "types": "./dist/neverthrow.d.ts",
+        "default": "./dist/neverthrow.js"
+      },
+      "require": {
+        "types": "./dist/neverthrow.d.cts",
+        "default": "./dist/neverthrow.cjs"
+      }
+    },
+    "./better-result": {
+      "import": {
+        "types": "./dist/better-result.d.ts",
+        "default": "./dist/better-result.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "neverthrow": [
+        "./dist/neverthrow.d.ts"
+      ],
+      "better-result": [
+        "./dist/better-result.d.ts"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "check:package": "publint && attw --pack . --profile node16",
+    "check:release": "node scripts/check-release.mjs",
+    "prepublishOnly": "npm run check:release && npm run typecheck && npm test && npm run build && publint"
+  },
+  "peerDependencies": {
+    "@tanstack/query-core": "^5.62.0",
+    "hono": "^4.7.0",
+    "neverthrow": "^8.0.0",
+    "better-result": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "neverthrow": {
+      "optional": true
+    },
+    "better-result": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@hono/zod-validator": "^0.7.0",
+    "@tanstack/query-core": "^5.108.2",
+    "@tanstack/react-query": "^5.108.2",
+    "@tanstack/solid-query": "^5.108.2",
+    "@tanstack/svelte-query": "^6.4.5",
+    "@tanstack/vue-query": "^5.108.2",
+    "@testing-library/react": "^16.3.3",
+    "@arethetypeswrong/cli": "^0.18.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitest/coverage-v8": "^3.2.7",
+    "better-result": "^3.0.1",
+    "hono": "^4.7.0",
+    "jsdom": "^31.0.0",
+    "neverthrow": "^8.2.0",
+    "publint": "^0.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "solid-js": "^1.9.0",
+    "svelte": "^5.25.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0",
+    "vue": "^3.5.0",
+    "zod": "^3.24.0"
+  },
+  "overrides": {
+    "@tanstack/query-core": "$@tanstack/query-core"
+  }
+}

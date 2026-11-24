@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check version matches tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Tag version ($TAG_VERSION) does not match package.json version ($PKG_VERSION)"
+            exit 1
+          fi
+
+      - name: Run verification & build
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Publish to npm
+        run: |
+          TAG="latest"
+          if [[ "${{ github.ref_name }}" =~ -(beta|alpha|rc) ]]; then
+            TAG="beta"
+          fi
+          npm publish --provenance --access public --tag "$TAG"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          NOTES=$(node scripts/changelog-section.mjs "$VERSION")
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Package skills
+        run: |
+          mkdir -p dist-skills
+          if [ -d "skills" ]; then
+            for dir in skills/*/; do
+              if [ -d "$dir" ]; then
+                name=$(basename "$dir")
+                (cd skills && zip -r "../dist-skills/${name}.skill" "$name")
+              fi
+            done
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.changelog.outputs.notes }}
+          files: dist-skills/*.skill
